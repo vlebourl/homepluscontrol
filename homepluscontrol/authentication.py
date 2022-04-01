@@ -38,10 +38,7 @@ class AbstractHomePlusOAuth2Async(ABC):
             "Ocp-Apim-Subscription-Key": self.subscription_key
         }
 
-        if oauth_client is None:
-            self.oauth_client = ClientSession()
-        else:
-            self.oauth_client = oauth_client
+        self.oauth_client = ClientSession() if oauth_client is None else oauth_client
 
     @abstractmethod
     async def async_get_access_token(self) -> str:
@@ -243,10 +240,7 @@ class HomePlusOAuth2Async(AbstractHomePlusOAuth2Async):
 
         """
         encoded_str = jwt.encode(data, self._secret, algorithm="HS256")
-        if isinstance(encoded_str, str):
-            return encoded_str
-        else:
-            return encoded_str.decode()
+        return encoded_str if isinstance(encoded_str, str) else encoded_str.decode()
 
     def _decode_jwt(self, encoded: str) -> Optional[dict]:
         """JWT decode data - relies on PyJWT.
@@ -277,16 +271,14 @@ class HomePlusOAuth2Async(AbstractHomePlusOAuth2Async):
                 dict: code and state values in a dictionary
         """
         code_pattern = "code=(.*)&"
-        match = re.search(code_pattern, redirect_url)
-        if match:
-            code = {"code": match.group(1)}
+        if match := re.search(code_pattern, redirect_url):
+            code = {"code": match[1]}
         else:
             return None
 
         state_pattern = "state=(.*)$"
-        match = re.search(state_pattern, redirect_url)
-        if match:
-            state = self._decode_jwt(match.group(1))
+        if match := re.search(state_pattern, redirect_url):
+            state = self._decode_jwt(match[1])
 
         return {**code, **state}
 

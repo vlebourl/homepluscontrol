@@ -168,7 +168,7 @@ class HomePlusPlant:
         # we update their status into the modules map of this plant object
         input_module_ids = set()
         for module_type in MODULE_CLASSES:
-            module_type_key = module_type + "s"
+            module_type_key = f'{module_type}s'
 
             for m_json in self.module_status["modules"].get(module_type_key, []):
                 module_id = m_json["sender"]["plant"]["module"]["id"]

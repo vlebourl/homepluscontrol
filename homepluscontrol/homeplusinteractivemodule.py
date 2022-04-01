@@ -70,9 +70,7 @@ class HomePlusInteractiveModule(HomePlusModule):
         """Toggle the state of this interactive module, i.e. if the module is on, the method call turns it off.
         If the module is off, the method call turns it on.
         """
-        desired_end_status = "off"
-        if self.status == "off":
-            desired_end_status = "on"
+        desired_end_status = "on" if self.status == "off" else "off"
         if await self.post_status_update({"status": desired_end_status}):
             self.status = desired_end_status
 
